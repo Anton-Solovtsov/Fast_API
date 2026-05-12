@@ -1,0 +1,31 @@
+from sqlalchemy.orm import Session
+
+from backend_fastAPI.repositories.category import CategoryRepository
+from backend_fastAPI.schemas.categories import CategorySchema, CategoryCreateSchema, CategoryUpdateSchema
+
+
+class CategoryService:
+    def __init__(self, db: Session):
+        self.db =db
+        self.category_repository = CategoryRepository(db)
+
+    def list_category(self) -> list[CategorySchema]:
+        cat_orm = self.category_repository.get_all()
+        return [CategorySchema.model_validate(cat) for cat in cat_orm]
+
+    def create_category(self, category_create: CategoryCreateSchema):
+        new_cat = self.category_repository.create(category_create.name)
+        self.db.commit()
+        return CategorySchema.model_validate(new_cat)
+
+    def update_category(self, category_id: str, cat_update: CategoryUpdateSchema):
+        cat_for_up = self.category_repository.get_by_id(category_id=category_id)
+        if cat_update.name:
+            cat_for_up.name = cat_update.name
+        self.db.commit()
+        return CategorySchema.model_validate(cat_for_up)
+
+    def delete_category(self, category_id: str):
+        cat_for_del = self.category_repository.get_by_id(category_id=category_id)
+        self.category_repository.delete(cat_for_del)
+        self.db.commit()

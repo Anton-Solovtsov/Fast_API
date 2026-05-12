@@ -1,23 +1,20 @@
-from pydantic import BaseModel
+from uuid import uuid4
 
-class TaskSchema(BaseModel):
-    id: str
-    title: str | None =None
-    completed: bool = False
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-class TaskCreateSchema(BaseModel):
-    title: str
 
-class TaskUpdateSchema(BaseModel):
-    title: str | None = None
-    completed: bool | None = None
+class Base(DeclarativeBase):
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid4()))
 
-class CategorySchema(BaseModel):
-    id: str
-    name: str
 
-class CategoryCreateSchema(BaseModel):
-    name: str
+class TaskORM(Base):
+    __tablename__ = 'Tasks'
 
-class CategoryUpdateSchema(BaseModel):
-    name: str
+    title: Mapped[str]
+    completed: Mapped[bool] = mapped_column(default=False)
+
+
+class CategoryORM(Base):
+    __tablename__ = 'Categories'
+
+    name: Mapped[str]
