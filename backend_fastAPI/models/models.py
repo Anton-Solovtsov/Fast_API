@@ -8,13 +8,13 @@ class Base(DeclarativeBase):
 
 
 class TaskORM(Base):
-    __tablename__ = 'Tasks'
+    __tablename__ = 'tasks'
 
     title: Mapped[str]
     completed: Mapped[bool] = mapped_column(default=False)
 
 
 class CategoryORM(Base):
-    __tablename__ = 'Categories'
+    __tablename__ = 'categories'
 
     name: Mapped[str]

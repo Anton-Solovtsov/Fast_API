@@ -10,16 +10,16 @@ from backend_fastAPI.db.session import engine
 from backend_fastAPI.core.config import get_settings
 
 
-@asynccontextmanager
-async def lifespan(_: FastAPI):
-    Base.metadata.create_all(bind=engine)
-    print("БД создана")
-    yield
+# @asynccontextmanager
+# async def lifespan(_: FastAPI):
+#     Base.metadata.create_all(bind=engine)
+#     print("БД создана")
+#     yield
 
 
 
 settings = get_settings()
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 app.include_router(router=api_router)
 
 app.add_middleware(

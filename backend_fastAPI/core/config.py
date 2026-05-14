@@ -16,7 +16,10 @@ class Settings:
 
 
 def get_settings() -> Settings:
-    return Settings(
-        DATABASE_URL=DATABASE_URL,
-        cors_allow_origins=cors_allow_origins
-    )
+
+    if DATABASE_URL and cors_allow_origins:
+        return Settings(
+            DATABASE_URL=DATABASE_URL,
+            cors_allow_origins=cors_allow_origins
+        )
+    raise ValueError('Не верно указан DATABASE_URL или cors_allow_origins')
