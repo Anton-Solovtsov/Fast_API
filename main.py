@@ -1,5 +1,6 @@
 import logging
 import time
+import asyncio
 
 from contextlib import asynccontextmanager
 from urllib import response, request
@@ -8,7 +9,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
-from threading import Lock
+
 
 from backend_fastAPI.api.routers.router import api_router
 from backend_fastAPI.core.logging import conf_logging
@@ -32,13 +33,13 @@ app.include_router(router=api_router)
 logger = logging.getLogger("app.middelware")
 
 count_request = 0
-count_lock = Lock()
+count_lock = asyncio.Lock()
 
 @app.middleware("http")
 async def log_request(request: Request, call_next) -> Response:
     global count_request
 
-    with count_lock:
+    async with count_lock:
         count_request +=1
         cur_num = count_request
 
