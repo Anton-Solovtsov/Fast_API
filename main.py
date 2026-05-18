@@ -1,22 +1,13 @@
+import asyncio
 import logging
 import time
-import asyncio
 
-from contextlib import asynccontextmanager
-from urllib import response, request
-
-from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.requests import Request
-
 
 from backend_fastAPI.api.routers.router import api_router
-from backend_fastAPI.core.logging import conf_logging
-from backend_fastAPI.models.models import Base
-from backend_fastAPI.db.session import engine
 from backend_fastAPI.core.config import get_settings
-
+from backend_fastAPI.core.logging import conf_logging
 
 # @asynccontextmanager
 # async def lifespan(_: FastAPI):
@@ -35,12 +26,13 @@ logger = logging.getLogger("app.middelware")
 count_request = 0
 count_lock = asyncio.Lock()
 
+
 @app.middleware("http")
 async def log_request(request: Request, call_next) -> Response:
     global count_request
 
     async with count_lock:
-        count_request +=1
+        count_request += 1
         cur_num = count_request
 
     start = time.perf_counter()
@@ -51,28 +43,27 @@ async def log_request(request: Request, call_next) -> Response:
     except Exception:
         stop = (time.perf_counter() - start) * 1000
         logger.exception(
-            'Request failed: %s %s completed_in=%.2f ms',
+            "Request failed: %s %s completed_in=%.2f ms",
             request.method,
             request.url.path,
-            stop
-
+            stop,
         )
         raise
 
     stop = (time.perf_counter() - start) * 1000
     logger.info(
-        '%s %s -> %s (%.2f ms)',
+        "%s %s -> %s (%.2f ms)",
         request.method,
         request.url.path,
         response.status_code,
-        stop
+        stop,
     )
 
     return response
+
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_allow_origins,
     allow_methods=["*"],
-
 )

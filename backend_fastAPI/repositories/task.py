@@ -1,27 +1,23 @@
 from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from backend_fastAPI.models.models import TaskORM
 
 
 class TaskRepository:
-    def __init__(self, db) -> None:
+    def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_all(self) -> TaskORM:
-        return self.db.scalars(select(TaskORM)).all()
+    def get_all(self) -> list[TaskORM]:
+        return list(self.db.scalars(select(TaskORM)).all())
 
-    def get_by_id(self, task_id: str) -> TaskORM:
+    def get_by_id(self, task_id: str) -> TaskORM | None:
         return self.db.get(TaskORM, task_id)
 
-    def create(self, title: str) ->TaskORM:
-        task = TaskORM(
-            title=title,
-            completed=False
-        )
+    def create(self, title: str) -> TaskORM:
+        task = TaskORM(title=title, completed=False)
         self.db.add(task)
         return task
 
     def delete(self, TaskORM) -> None:
         self.db.delete(TaskORM)
-
-
