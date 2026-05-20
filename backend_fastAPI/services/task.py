@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from backend_fastAPI.repositories.task import TaskRepository
 from backend_fastAPI.schemas.tasks import TaskCreateSchema, TaskSchema, TaskUpdateSchema
+from backend_fastAPI.services.exception import TaskNotFoundError
 
 
 class TaskService:
@@ -28,7 +29,7 @@ class TaskService:
                 task_for_up.completed = task_update.completed
             self.db.commit()
             return TaskSchema.model_validate(task_for_up)
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise TaskNotFoundError(status_code=404, detail="Task not found")
 
     def delete_task(self, task_id: str) -> None:
         task_for_del = self.task_repository.get_by_id(task_id=task_id)

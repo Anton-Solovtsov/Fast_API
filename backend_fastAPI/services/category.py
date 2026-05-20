@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from backend_fastAPI.repositories.category import CategoryRepository
@@ -7,6 +6,7 @@ from backend_fastAPI.schemas.categories import (
     CategorySchema,
     CategoryUpdateSchema,
 )
+from backend_fastAPI.services.exception import CategoryNotFoundError
 
 
 class CategoryService:
@@ -30,7 +30,7 @@ class CategoryService:
                 cat_for_up.name = cat_update.name
             self.db.commit()
             return CategorySchema.model_validate(cat_for_up)
-        raise HTTPException(status_code=404, detail="Category not found")
+        raise CategoryNotFoundError(status_code=404, detail="Category not found")
 
     def delete_category(self, category_id: str) -> None:
         cat_for_del = self.category_repository.get_by_id(category_id=category_id)
@@ -38,4 +38,4 @@ class CategoryService:
             self.category_repository.delete(cat_for_del)
             self.db.commit()
         else:
-            raise HTTPException(status_code=404, detail="Category not found")
+            raise CategoryNotFoundError(status_code=404, detail="Category not found")
